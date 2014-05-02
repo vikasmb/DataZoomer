@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+
+<h:head>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-type" />
+</h:head>
+
+<h:body>
+	<h:form>
+		
+		<p:focus for="terminal" />
+		<p:terminal id="terminal" widgetVar="term"
+			commandHandler="#{queryBean.handleCommand}"
+			welcomeMessage="Welcome to DataZoomer for interactive querying !!!" />
+
+		<p:commandButton type="button" value="Clear" icon="ui-icon-trash"
+			onclick="PF('term').clear()" style="margin-top:10px" />
+
+	</h:form>
+</h:body>
+
+<!--</ui:composition> -->
+</html>
