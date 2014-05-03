@@ -14,7 +14,7 @@
 
 <h:body>
 	<h:form>
-	    <p:growl id="growl" showDetail="true"  />
+	    <p:growl id="growl" showDetail="true" life="2500"  redisplay="false" escape="false" />
 		<p:panel id="pGroup">
 			<p:inputTextarea rows="10" id="qStr" cols="50"
 				value="#{queryBean.queryString}" />

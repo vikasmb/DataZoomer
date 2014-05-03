@@ -3,7 +3,9 @@ package org.dm;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -32,18 +34,9 @@ public class QueryExecutor {
 			"is_coppa", "device_segment", "connection_segment", "os_segment",
 			"browser_segment", "bill_revenue_from_buyer", "container_type" };
 	final List<String> fieldList = Arrays.asList(fields);
-
+    private Random random=new Random();
 	public QueryExecutor() {
-		String command = "trialData = LOAD '/tmp/sampleText' using PigStorage(',');";
-		try {
-			pigServer = new PigServer(ExecType.LOCAL);
-			pigServer.registerQuery(command);
-			command = "cubedData = cube trialData BY CUBE(campaign_id,region_id);";
-			pigServer.registerQuery(command);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		pigServer=PigService.getInstance().getServer();
 		List<String> cubedAttrs = new ArrayList<String>();
 		cubedAttrs.add("campaign_id");
 		cubedAttrs.add("region_id");
@@ -84,14 +77,31 @@ public class QueryExecutor {
 				"Additional Info Here..."));*/
 		for (String optQuery : optimizedQueries) {
 			context.addMessage(null,
-					new FacesMessage("Query rewritten to", optQuery));
+					new FacesMessage("Query rewritten to<b>", optQuery+"</b>"));
 			System.out.println(optQuery);
 		}
+		for(String optQuery:optimizedQueries){
+			try {
+				System.out.println("*******Sending optQuery: "+optQuery+" to Pig Server");
+				pigServer.registerQuery(optQuery);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		try {
+			pigServer.store("tmp", "/tmp/"+random.nextInt(5000));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 
 	}
 
 	public static void main(String[] args) {
 		QueryExecutor exec = new QueryExecutor();
-		exec.execute("A = FILTER trialData BY campaign_id == 5;");
+		exec.execute("A = FILTER trialData BY campaign_id == '5';");
 	}
 }
