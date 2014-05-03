@@ -13,15 +13,13 @@
 </h:head>
 
 <h:body>
-	<h:form>
-		
-		<p:focus for="terminal" />
-		<p:terminal id="terminal" widgetVar="term"
-			commandHandler="#{queryBean.handleCommand}"
-			welcomeMessage="Welcome to DataZoomer for interactive querying !!!" />
+	<h:form>		
 
-		<p:commandButton type="button" value="Clear" icon="ui-icon-trash"
-			onclick="PF('term').clear()" style="margin-top:10px" />
+		<p:inputTextarea rows="10" widgetVar="term" cols="50"
+			value="#{queryBean.queryString}" queryDelay="750" minQueryLength="4" />
+		<p:commandButton type="button" value="Run Query" immediate="true" process="@this"
+			actionListener="#{queryBean.handleCommand}" style="margin-top:10px" />
+
 
 	</h:form>
 </h:body>
