@@ -5,32 +5,51 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
 import org.apache.pig.ExecType;
 import org.apache.pig.PigServer;
 
 public class QueryExecutor {
 	private PigServer pigServer;
-    private QueryOptimizer optimizer;
-    private QueryPredictor predictor;
-	final public String[] fields={"ymdh","user_id","impressions","clicks","conversions","campaign_id","creative_id","region_id","msa_id,size_id","amt_paid_to_media_seller","amt_paid_to_data_seller","data_revenue_from_buyer","media_revenue_from_buyer","amt_paid_to_broker","section_id","site_id","netspeed_id","user_agent","query_string","pop_type_id","roi_cost","gender","age","creative_frequency","vurl_frequency","language_ids","isp_id","offer_type_id","conversion_id","trigger_by_click","ecpm","second_ecpm","ltv_value","rtb_transaction_type","first_initial_bid_amount","first_initial_bid_price_type","second_initial_bid_amount","second_initial_bid_price_type","screen_type","rich_media_flag","geo_best","geo_best_level","content_rev_share","mobile_wifi","marketplace_type","psa_flag","house_ad_flag","passback_flag","is_coppa","device_segment","connection_segment","os_segment","browser_segment","bill_revenue_from_buyer","container_type"};
-    final List<String> fieldList=Arrays.asList(fields);
-    public QueryExecutor(){
-    	String command="trialData = LOAD '/tmp/sampleText' using PigStorage(',');";
-    	try {
-				pigServer = new PigServer(ExecType.LOCAL);
-				pigServer.registerQuery(command);
-		    	command="cubedData = cube trialData BY CUBE(campaign_id,region_id);";
-		    	pigServer.registerQuery(command);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		    
-    	List<String> cubedAttrs=new ArrayList<String>();
-    	cubedAttrs.add("campaign_id");
-    	cubedAttrs.add("region_id");
-    	optimizer=new QueryOptimizer("cubedData", cubedAttrs, fieldList);
-    	predictor=new QueryPredictor();
-    }
+	private QueryOptimizer optimizer;
+	private QueryPredictor predictor;
+	final public String[] fields = { "ymdh", "user_id", "impressions",
+			"clicks", "conversions", "campaign_id", "creative_id", "region_id",
+			"msa_id,size_id", "amt_paid_to_media_seller",
+			"amt_paid_to_data_seller", "data_revenue_from_buyer",
+			"media_revenue_from_buyer", "amt_paid_to_broker", "section_id",
+			"site_id", "netspeed_id", "user_agent", "query_string",
+			"pop_type_id", "roi_cost", "gender", "age", "creative_frequency",
+			"vurl_frequency", "language_ids", "isp_id", "offer_type_id",
+			"conversion_id", "trigger_by_click", "ecpm", "second_ecpm",
+			"ltv_value", "rtb_transaction_type", "first_initial_bid_amount",
+			"first_initial_bid_price_type", "second_initial_bid_amount",
+			"second_initial_bid_price_type", "screen_type", "rich_media_flag",
+			"geo_best", "geo_best_level", "content_rev_share", "mobile_wifi",
+			"marketplace_type", "psa_flag", "house_ad_flag", "passback_flag",
+			"is_coppa", "device_segment", "connection_segment", "os_segment",
+			"browser_segment", "bill_revenue_from_buyer", "container_type" };
+	final List<String> fieldList = Arrays.asList(fields);
+
+	public QueryExecutor() {
+		String command = "trialData = LOAD '/tmp/sampleText' using PigStorage(',');";
+		try {
+			pigServer = new PigServer(ExecType.LOCAL);
+			pigServer.registerQuery(command);
+			command = "cubedData = cube trialData BY CUBE(campaign_id,region_id);";
+			pigServer.registerQuery(command);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		List<String> cubedAttrs = new ArrayList<String>();
+		cubedAttrs.add("campaign_id");
+		cubedAttrs.add("region_id");
+		optimizer = new QueryOptimizer("cubedData", cubedAttrs, fieldList);
+		predictor = new QueryPredictor();
+	}
 
 	// Initialise queryoptimizer with the attributes and their corresponding
 	// cube
@@ -41,28 +60,38 @@ public class QueryExecutor {
 
 	// QueryExecutor would perform the co-ordination of the execution and
 	// execute the actual queries over embedded pig interface.
-    
-    //Only FILTER commands are executed here
+
+	// Only FILTER commands are executed here
 	public void execute(String command) {
-		List<String> queryAttributes=new ArrayList<String>();
-		String qAttr=null;
-	    for(String str:fieldList){
-	    	if(command.contains(str)){
-	    		qAttr=str;
-	    		queryAttributes.add(str);
-	    		break;
-	    	}
-	    }
-		List<String> predictedAttributes=predictor.getNextAttribute(queryAttributes);
-		List<String> optimizedQueries=optimizer.getOptimizedQueries(command, qAttr,predictedAttributes.get(0) );
-		for(String optQuery:optimizedQueries){
+		List<String> queryAttributes = new ArrayList<String>();
+		String qAttr = null;
+		for (String str : fieldList) {
+			if (command.contains(str)) {
+				qAttr = str;
+				queryAttributes.add(str);
+				break;
+			}
+		}
+		List<String> predictedAttributes = predictor
+				.getNextAttribute(queryAttributes);
+		List<String> optimizedQueries = optimizer.getOptimizedQueries(command,
+				qAttr, predictedAttributes.get(0));
+		FacesContext context = FacesContext.getCurrentInstance();
+
+		/*context.addMessage(null,
+				new FacesMessage("Successful", "Hello " + text));
+		context.addMessage(null, new FacesMessage("Second Message",
+				"Additional Info Here..."));*/
+		for (String optQuery : optimizedQueries) {
+			context.addMessage(null,
+					new FacesMessage("Query rewritten to", optQuery));
 			System.out.println(optQuery);
 		}
-	
+
 	}
-	
-	public static void main(String[] args){
-		QueryExecutor exec=new QueryExecutor();
-		exec.execute("A = FILTER trialData BY campaign_id == 5");
+
+	public static void main(String[] args) {
+		QueryExecutor exec = new QueryExecutor();
+		exec.execute("A = FILTER trialData BY campaign_id == 5;");
 	}
 }

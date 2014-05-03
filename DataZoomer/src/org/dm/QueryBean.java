@@ -30,10 +30,13 @@ public class QueryBean {
 	}
 
 	public String getQueryString() {
+		//System.out.println("Getting qs");
 		return queryString;
 	}
 
 	public void setQueryString(String queryString) {
+		//System.out.println("Setting qs");
+
 		this.queryString = queryString;
 	}
 
@@ -49,8 +52,12 @@ public class QueryBean {
 		return outStr;
 	}*/
 	
-	public void handleCommand() {
-		System.out.println("In Actionlistener");
+	public String doAction(){
+	//	System.out.println("In actionmethod");
+		return null;
+	}
+	public void handlecommand() {
+		//System.out.println("In Actionlistener");
 		String outStr = "";
 		String command=queryString;
 		//command="\""+command+"\"";

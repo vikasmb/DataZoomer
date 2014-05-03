@@ -13,16 +13,19 @@
 </h:head>
 
 <h:body>
-	<h:form>		
-
-		<p:inputTextarea rows="10" widgetVar="term" cols="50"
-			value="#{queryBean.queryString}" queryDelay="750" minQueryLength="4" />
-		<p:commandButton type="button" value="Run Query" immediate="true" process="@this"
-			actionListener="#{queryBean.handleCommand}" style="margin-top:10px" />
-
+	<h:form>
+	    <p:growl id="growl" showDetail="true"  />
+		<p:panel id="pGroup">
+			<p:inputTextarea rows="10" id="qStr" cols="50"
+				value="#{queryBean.queryString}" />
+			
+			<p:commandButton value="Run Query"
+				actionListener="#{queryBean.handlecommand}" partialSubmit="true"
+				action="#{queryBean.doAction}" update="growl" process="pGroup"
+				style="margin-top:10px" />
+		</p:panel>
 
 	</h:form>
 </h:body>
 
-<!--</ui:composition> -->
 </html>
