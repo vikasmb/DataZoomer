@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -12,6 +14,8 @@ import javax.faces.context.FacesContext;
 
 import org.apache.pig.ExecType;
 import org.apache.pig.PigServer;
+import org.apache.pig.data.DataType;
+import org.apache.pig.data.Tuple;
 
 public class QueryExecutor {
 	private PigServer pigServer;
@@ -19,7 +23,7 @@ public class QueryExecutor {
 	private QueryPredictor predictor;
 	final public String[] fields = { "ymdh", "user_id", "impressions",
 			"clicks", "conversions", "campaign_id", "creative_id", "region_id",
-			"msa_id,size_id", "amt_paid_to_media_seller",
+			"msa_id", "size_id", "amt_paid_to_media_seller",
 			"amt_paid_to_data_seller", "data_revenue_from_buyer",
 			"media_revenue_from_buyer", "amt_paid_to_broker", "section_id",
 			"site_id", "netspeed_id", "user_agent", "query_string",
@@ -34,9 +38,10 @@ public class QueryExecutor {
 			"is_coppa", "device_segment", "connection_segment", "os_segment",
 			"browser_segment", "bill_revenue_from_buyer", "container_type" };
 	final List<String> fieldList = Arrays.asList(fields);
-    private Random random=new Random();
+	private Random random = new Random();
+
 	public QueryExecutor() {
-		pigServer=PigService.getInstance().getServer();
+		pigServer = PigService.getInstance().getServer();
 		List<String> cubedAttrs = new ArrayList<String>();
 		cubedAttrs.add("campaign_id");
 		cubedAttrs.add("region_id");
@@ -55,7 +60,24 @@ public class QueryExecutor {
 	// execute the actual queries over embedded pig interface.
 
 	// Only FILTER commands are executed here
-	public void execute(String command) {
+	public void execute(String command, boolean filterCommand) {
+		if (!filterCommand) {
+			try {
+				System.out.println("*******Sending optQuery: " + command
+						+ " to Pig Server");
+				pigServer.registerQuery(command);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		}
+
+		/*
+		 * String alias=command.split("\\s*=")[0]; try { pigServer.store(alias,
+		 * "/tmp/"+random.nextInt(5000)); } catch (IOException e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); }
+		 */
 		List<String> queryAttributes = new ArrayList<String>();
 		String qAttr = null;
 		for (String str : fieldList) {
@@ -71,37 +93,38 @@ public class QueryExecutor {
 				qAttr, predictedAttributes.get(0));
 		FacesContext context = FacesContext.getCurrentInstance();
 
-		/*context.addMessage(null,
-				new FacesMessage("Successful", "Hello " + text));
-		context.addMessage(null, new FacesMessage("Second Message",
-				"Additional Info Here..."));*/
+		/*
+		 * context.addMessage(null, new FacesMessage("Successful", "Hello " +
+		 * text)); context.addMessage(null, new FacesMessage("Second Message",
+		 * "Additional Info Here..."));
+		 */
 		for (String optQuery : optimizedQueries) {
-			context.addMessage(null,
-					new FacesMessage("Query rewritten to<b>", optQuery+"</b>"));
+			context.addMessage(null, new FacesMessage("Query rewritten to<b>",
+					optQuery + "</b>"));
 			System.out.println(optQuery);
 		}
-		for(String optQuery:optimizedQueries){
+		for (String optQuery : optimizedQueries) {
 			try {
-				System.out.println("*******Sending optQuery: "+optQuery+" to Pig Server");
+				System.out.println("*******Sending optQuery: " + optQuery
+						+ " to Pig Server");
 				pigServer.registerQuery(optQuery);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+
 		try {
-			pigServer.store("tmp", "/tmp/"+random.nextInt(5000));
+			pigServer.store("tmp", "/tmp/" + random.nextInt(5000));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 
 	}
 
 	public static void main(String[] args) {
 		QueryExecutor exec = new QueryExecutor();
-		exec.execute("A = FILTER trialData BY campaign_id == '5';");
+		exec.execute("A = FILTER trialData BY region_id == 5;", true);
 	}
 }

@@ -13,18 +13,29 @@
 </h:head>
 
 <h:body>
-	<h:form>
-	    <p:growl id="growl" showDetail="true" life="2500"  redisplay="false" escape="false" />
-		<p:panel id="pGroup">
-			<p:inputTextarea rows="10" id="qStr" cols="50"
-				value="#{queryBean.queryString}" />
-			
-			<p:commandButton value="Run Query"
-				actionListener="#{queryBean.handlecommand}" partialSubmit="true"
-				action="#{queryBean.doAction}" update="growl" process="pGroup"
-				style="margin-top:10px" />
-		</p:panel>
-
+	<h:form id="hForm">
+		<p:growl id="growl" showDetail="true" life="8500" redisplay="false"
+			escape="false" />
+		<p:layout id="layout" fullPage="true">
+			<p:layoutUnit position="north" size="400" >
+				<p:panelGrid id="pGroup" columns="1">
+					<p:inputTextarea rows="10" id="qStr" cols="50"
+						placeholder="Enter your query string here"
+						value="#{queryBean.queryString}" />					
+					<f:facet name="footer">
+						<p:commandButton value="Run Query"
+							actionListener="#{queryBean.handlecommand}" partialSubmit="true"
+							action="#{queryBean.doAction}" update="growl,:hForm:qStr1" process="pGroup"
+							style="margin-top:10px" />
+					</f:facet>
+				</p:panelGrid>
+			</p:layoutUnit>
+			<p:layoutUnit position="center" size="400">
+			<p:inputTextarea rows="10" id="qStr1"  cols="150" value="#{queryBean.resultString}"
+						placeholder="Results"
+						/>
+			</p:layoutUnit>
+		</p:layout>
 	</h:form>
 </h:body>
 
