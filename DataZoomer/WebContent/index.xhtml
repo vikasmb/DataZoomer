@@ -14,26 +14,27 @@
 
 <h:body>
 	<h:form id="hForm">
-		<p:growl id="growl" showDetail="true" life="8500" redisplay="false"
-			escape="false" />
+
 		<p:layout id="layout" fullPage="true">
-			<p:layoutUnit position="north" size="400" >
+			<p:layoutUnit position="north" size="400">
+				<p:messages id="messages">
+					<p:effect type="pulsate" event="load" delay="200" />
+				</p:messages>
 				<p:panelGrid id="pGroup" columns="1">
 					<p:inputTextarea rows="10" id="qStr" cols="50"
 						placeholder="Enter your query string here"
-						value="#{queryBean.queryString}" />					
+						value="#{queryBean.queryString}" />
 					<f:facet name="footer">
 						<p:commandButton value="Run Query"
 							actionListener="#{queryBean.handlecommand}" partialSubmit="true"
-							action="#{queryBean.doAction}" update="growl,:hForm:qStr1" process="pGroup"
-							style="margin-top:10px" />
+							action="#{queryBean.doAction}" update="messages,:hForm:qStr1"
+							process="pGroup" style="margin-top:10px" />
 					</f:facet>
 				</p:panelGrid>
 			</p:layoutUnit>
 			<p:layoutUnit position="center" size="400">
-			<p:inputTextarea rows="10" id="qStr1"  cols="150" value="#{queryBean.resultString}"
-						placeholder="Results"
-						/>
+				<p:inputTextarea rows="10" id="qStr1" cols="150"
+					value="#{queryBean.resultString}" placeholder="Results" />
 			</p:layoutUnit>
 		</p:layout>
 	</h:form>

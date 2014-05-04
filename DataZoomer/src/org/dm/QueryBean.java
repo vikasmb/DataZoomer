@@ -80,6 +80,10 @@ public class QueryBean {
 				try {
 					String alias1=command.split("\\s+")[1];
 					String alias2=alias1.split(";")[0];
+					for(String key:server.getAliasKeySet()){
+						System.out.println("Current alias:"+key);
+					}
+					System.out.println("Dumping:"+alias2);
 					i = server.openIterator(alias2);
 					strBuilder=new StringBuilder();
 					while (i.hasNext()) {

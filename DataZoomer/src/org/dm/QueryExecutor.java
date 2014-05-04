@@ -99,8 +99,10 @@ public class QueryExecutor {
 		 * "Additional Info Here..."));
 		 */
 		for (String optQuery : optimizedQueries) {
-			context.addMessage(null, new FacesMessage("Query rewritten to<b>",
-					optQuery + "</b>"));
+			//context.addMessage(null, new FacesMessage("",
+					//optQuery + "</b>"));
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Query rewritten to " + optQuery, null);
+			FacesContext.getCurrentInstance().addMessage(null, message);
 			System.out.println(optQuery);
 		}
 		for (String optQuery : optimizedQueries) {
