@@ -49,7 +49,7 @@ public class QueryOptimizer {
 			if (pos >= 0){
 				splitQuery.set(pos, "group." + queryattribute);
 			}
-			
+			optimizedQueryList.add("Using the CubedData!");
 			optimizedQueryList.add(constructQuery(splitQuery));
 			optimizedQueryList.add(flattenCube(splitQuery.get(0)));
 			optimizedQueryList.add(groupOnPrediction(splitQuery.get(0), currentPrediction));		
@@ -61,12 +61,13 @@ public class QueryOptimizer {
 			splitQuery.set(pos,"tmp");
 			pos = splitQuery.indexOf(queryattribute);
 			splitQuery.set(pos, "group");
-
+			optimizedQueryList.add("Grouping Prediction Correct!");
 			optimizedQueryList.add(constructQuery(splitQuery));
 			optimizedQueryList.add(flattenGroup(splitQuery.get(0)));
 			optimizedQueryList.add(groupOnPrediction(splitQuery.get(0), currentPrediction));
 
 		} else {
+			optimizedQueryList.add("Grouping Prediction Incorrect!");
 			optimizedQueryList.add(constructQuery(splitQuery));
 			optimizedQueryList.add(groupOnPrediction(splitQuery.get(0), currentPrediction));			
 		}
