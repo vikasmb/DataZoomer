@@ -43,8 +43,10 @@ public class QueryExecutor {
 	public QueryExecutor() {
 		pigServer = PigService.getInstance().getServer();
 		List<String> cubedAttrs = new ArrayList<String>();
-		cubedAttrs.add("campaign_id");
+		cubedAttrs.add("user_agent");
+		cubedAttrs.add("gender");
 		cubedAttrs.add("region_id");
+		cubedAttrs.add("size_id");
 		optimizer = new QueryOptimizer("cubedData", cubedAttrs, fieldList);
 		predictor = new QueryPredictor();
 	}
@@ -99,12 +101,11 @@ public class QueryExecutor {
 		 * "Additional Info Here..."));
 		 */
 		for (String optQuery : optimizedQueries) {
-			//context.addMessage(null, new FacesMessage("",
-					//optQuery + "</b>"));
-			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Query rewritten to " + optQuery, null);
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Query rewritten: " + optQuery, null);
 			FacesContext.getCurrentInstance().addMessage(null, message);
 			System.out.println(optQuery);
 		}
+		optimizedQueries.remove(0);
 		for (String optQuery : optimizedQueries) {
 			try {
 				System.out.println("*******Sending optQuery: " + optQuery

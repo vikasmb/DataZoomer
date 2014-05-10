@@ -87,7 +87,7 @@ public class QueryBean {
 					i = server.openIterator(alias2);
 					strBuilder=new StringBuilder();
 					while (i.hasNext()) {
-						strBuilder.append(i.next());						
+						strBuilder.append(i.next()+"\n");						
 					}
 					resultString=strBuilder.toString();
 					//System.out.println("REsult is "+resultString);
