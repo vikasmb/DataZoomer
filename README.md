@@ -1,4 +1,4 @@
 DataZoomer
 ==========
 
-Predictive data cubing techniques
+Predictive data cubing techniques using Apache Pig
